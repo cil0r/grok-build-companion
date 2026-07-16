@@ -821,6 +821,14 @@ function initEcuRemapper() {
   uploadZone.addEventListener('click', () => {
     fileInput.click();
   });
+
+  const btnLoadDemo = document.getElementById('btn-load-demo-ecu');
+  if (btnLoadDemo) {
+    btnLoadDemo.addEventListener('click', (e) => {
+      e.stopPropagation();
+      loadEcuFile('Alfa_Romeo_2.0_JTDM_Original.bin');
+    });
+  }
   
   fileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
