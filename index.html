@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grok Build Companion</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+  <div class="glow-bg"></div>
+  <div class="glow-bg-2"></div>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3b82f6"/>
+              <stop offset="1" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="logo-text">
+          <h1>Grok Build <span>Companion</span></h1>
+          <p>TUI Customizer & Data Plane Auditor</p>
+        </div>
+      </div>
+      
+      <div class="nav-tabs">
+        <button class="nav-btn active" data-tab="theme-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/><path d="M12 2V12L19.07 19.07"/></svg>
+          Theme Playground
+        </button>
+        <button class="nav-btn" data-tab="privacy-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Privacy Data Flow
+        </button>
+        <button class="nav-btn" data-tab="graph-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zM6 21a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v12a3 3 0 0 0 3 3z"/><path d="M9 6h6M9 18h6"/></svg>
+          Code Graph View
+        </button>
+        <button class="nav-btn" data-tab="ecu-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          AI ECU Remapper
+        </button>
+      </div>
+      
+      <div class="header-actions">
+        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=bloddolo@outlook.it&amp;item_name=Grok%20Build%20Companion%20Sponsorship&amp;currency_code=EUR" target="_blank" class="btn-donate" id="btn-donate">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Sponsor on PayPal
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      
+      <!-- ================= THEME PLAYGROUND TAB ================= -->
+      <section id="theme-tab" class="tab-content active">
+        <div class="grid-layout">
+          <!-- Control Panel -->
+          <div class="panel glass scrollable">
+            <h2 class="panel-title">Theme Controls</h2>
+            
+            <div class="control-group">
+              <label class="group-label">Quick Presets</label>
+              <div class="preset-buttons">
+                <button class="btn preset-btn active" data-preset="tokyonight">TokyoNight</button>
+                <button class="btn preset-btn" data-preset="cyberpunk">Cyberpunk</button>
+                <button class="btn preset-btn" data-preset="nord">Nord Theme</button>
+                <button class="btn preset-btn" data-preset="monokai">Monokai Pro</button>
+                <button class="btn preset-btn" data-preset="solarized">Solarized Dark</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="group-label">Grok CLI LLM Connector</label>
+              <div class="llm-config-panel">
+                <div class="input-row">
+                  <span class="input-label">Provider</span>
+                  <select id="llm-provider" class="llm-select">
+                    <option value="xai">SpaceXAI (Default)</option>
+                    <option value="ollama">Ollama (Local LLM)</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="claude">Anthropic Claude</option>
+                  </select>
+                </div>
+                <div class="input-row" id="row-llm-model" style="display: none;">
+                  <span class="input-label">Model ID</span>
+                  <input type="text" id="llm-model-id" value="llama3" class="llm-input">
+                </div>
+                <div class="input-row" id="row-llm-url" style="display: none;">
+                  <span class="input-label">API Base URL</span>
+                  <input type="text" id="llm-base-url" value="http://localhost:11434/v1" class="llm-input">
+                </div>
+                <div class="input-row" id="row-llm-key" style="display: none;">
+                  <span class="input-label">API Key</span>
+                  <input type="password" id="llm-api-key" placeholder="Enter API Key" class="llm-input">
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="group-label">Background Colors</label>
+              <div class="color-picker-grid">
+                <div class="color-picker-item">
+                  <span class="color-label">Base BG</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-bg_base" value="#1a1b26">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Light BG</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-bg_light" value="#292e42">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Dark BG</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-bg_dark" value="#16161e">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Highlight BG</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-bg_highlight" value="#292e42">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="group-label">Accents & Roles</label>
+              <div class="color-picker-grid">
+                <div class="color-picker-item">
+                  <span class="color-label">User Acc.</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_user" value="#7aa2f7">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Assist. Acc.</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_assistant" value="#bb9af7">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Thinking</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_thinking" value="#3b4261">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Tool Acc.</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_tool" value="#737aa2">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Success</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_success" value="#9ece6a">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Error</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_error" value="#f7768e">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Plan Acc.</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_plan" value="#e0af68">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Verify Acc.</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-accent_verify" value="#bb9af7">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="group-label">Text & Syntax</label>
+              <div class="color-picker-grid">
+                <div class="color-picker-item">
+                  <span class="color-label">Primary Text</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-text_primary" value="#c0caf5">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Secondary Text</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-text_secondary" value="#a9b1d6">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Muted / Gray</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-gray" value="#565f89">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Paths</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-path" value="#ff9e64">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Commands</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-command" value="#e0af68">
+                  </div>
+                </div>
+                <div class="color-picker-item">
+                  <span class="color-label">Warning</span>
+                  <div class="picker-wrapper">
+                    <input type="color" id="color-warning" value="#e0af68">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="export-actions">
+              <button class="btn btn-primary" id="btn-export-toml">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export grok.toml
+              </button>
+            </div>
+          </div>
+
+          <!-- TUI Simulator Panel -->
+          <div class="panel glass preview-panel">
+            <h2 class="panel-title">TUI Live Simulator</h2>
+            
+            <div class="tui-terminal" id="tui-preview">
+              <!-- Terminal Title Bar -->
+              <div class="tui-titlebar">
+                <div class="title-dots">
+                  <span class="dot dot-r"></span>
+                  <span class="dot dot-y"></span>
+                  <span class="dot dot-g"></span>
+                </div>
+                <div class="title-text">xai-grok-pager &mdash; grok-build cli</div>
+                <div class="title-env">v0.2.98 [ZDR]</div>
+              </div>
+
+              <!-- Terminal Inner Cwd -->
+              <div class="tui-cwd-bar">
+                <span class="cwd-label">LOCATION</span>
+                <span class="cwd-path">C:/Users/blodd/Desktop/grok</span>
+                <span class="cwd-git">git: (main*)</span>
+              </div>
+
+              <!-- Terminal Content -->
+              <div class="tui-body scrollable">
+                <!-- System Announcement -->
+                <div class="tui-block system-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-system);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-system);">[System Announcement]</span>
+                    <p class="text-sec">SpaceXAI Grok Build Client initialized. Authentication verified. Data retention is disabled for this organization session.</p>
+                  </div>
+                </div>
+
+                <!-- User Message -->
+                <div class="tui-block user-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-user);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-user);">USER</span>
+                    <p class="text-prim">Audit the data pipeline hooks and update the model schema file to disable logs.</p>
+                  </div>
+                </div>
+
+                <!-- Thinking state -->
+                <div class="tui-block thinking-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-thinking);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--gray);">THINKING (2.4s)</span>
+                    <p class="text-muted">Analyzing files in workspace... Found config model file in crates/codegen/xai-grok-auth/src/auth/model.rs.</p>
+                  </div>
+                </div>
+
+                <!-- Tool Run command -->
+                <div class="tui-block tool-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-tool);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-tool);">TOOL: run_command</span>
+                    <div class="tui-code">
+                      <span class="code-prompt">$</span> <span class="code-cmd" style="color: var(--command);">cargo check -p xai-grok-auth</span>
+                    </div>
+                    <div class="tui-console">
+                      <span class="con-success" style="color: var(--accent-success);">Finished</span> dev [unoptimized + debuginfo] target(s) in 0.12s
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Assistant Response -->
+                <div class="tui-block assistant-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-assistant);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-assistant);">ASSISTANT</span>
+                    <p class="text-prim">I have verified the configuration compilation. Now modifying the authentication config file <span class="code-inline" style="color: var(--path);">crates/codegen/xai-grok-auth/src/auth/model.rs</span> to ensure all telemetry calls fail-closed when data collection is disabled.</p>
+                  </div>
+                </div>
+
+                <!-- Diff view -->
+                <div class="tui-block diff-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-plan);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-plan);">PLAN: file_edit</span>
+                    <div class="tui-diff">
+                      <div class="diff-header" style="color: var(--path);">crates/codegen/xai-grok-auth/src/auth/model.rs</div>
+                      <div class="diff-line diff-del"><span class="diff-sym">-</span><span class="diff-text">pub fn allows_data_collection() -> bool { true }</span></div>
+                      <div class="diff-line diff-add"><span class="diff-sym">+</span><span class="diff-text">pub fn allows_data_collection() -> bool { false } // strict privacy gate</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Verification result -->
+                <div class="tui-block verify-msg">
+                  <div class="block-indicator" style="background-color: var(--accent-verify);"></div>
+                  <div class="block-content">
+                    <span class="block-header" style="color: var(--accent-verify);">VERIFY</span>
+                    <p class="text-prim"><span style="color: var(--accent-success);">[SUCCESS]</span> All unit tests passed inside the sandbox environment.</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Terminal Prompt Input -->
+              <div class="tui-prompt">
+                <span class="prompt-sym" style="color: var(--accent-assistant);">&gt;</span>
+                <span class="prompt-text">Ready for your next instruction...</span>
+                <span class="prompt-cursor"></span>
+              </div>
+
+              <!-- Terminal Keybind Help footer -->
+              <div class="tui-footer">
+                <div class="keybind"><span class="key">Enter</span> Send</div>
+                <div class="keybind"><span class="key">Esc</span> Menu</div>
+                <div class="keybind"><span class="key">Tab</span> Toggle view</div>
+                <div class="keybind"><span class="key">Ctrl+C</span> Quit</div>
+                <div class="keybind"><span class="key">?:</span> Help</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PRIVACY AUDITOR TAB ================= -->
+      <section id="privacy-tab" class="tab-content">
+        <div class="privacy-layout">
+          <!-- Toggle Controller -->
+          <div class="panel glass">
+            <h2 class="panel-title">Privacy & Data Control Gates</h2>
+            <p class="section-desc">Grok Build loads configuration parameters from local TOML configurations and cloud policy headers. Adjust the settings below to see how the data pipelines respond dynamically.</p>
+            
+            <div class="privacy-switches">
+              <div class="switch-card">
+                <div class="switch-info">
+                  <h3>Zero Data Retention (ZDR)</h3>
+                  <p>Forces the API to process data in-memory without persistent logs or model training storage. Configured in <code>requirements.toml</code>.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="toggle-zdr" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-card">
+                <div class="switch-info">
+                  <h3>Coding Data Collection Opt-out</h3>
+                  <p>When checked, activates the <code>is_data_collection_disabled()</code> client check, bypassing trace uploads to the cloud.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="toggle-optout" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-card">
+                <div class="switch-info">
+                  <h3>Mixpanel Telemetry</h3>
+                  <p>Sends product usage and error analytics to telemetry services. Disabling this blocks outgoing telemetry hooks.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="toggle-telemetry" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="audit-status card">
+              <div class="status-icon success" id="audit-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="status-details">
+                <h4 id="status-title">Secured: Local-First Boundary</h4>
+                <p id="status-description">All workspace files and prompt inputs are kept locally. Zero traces are uploaded to cloud servers. Data retention is bypassed.</p>
+              </div>
+            </div>
+            
+            <div class="code-reference-card">
+              <h4>Rust Source File Logic Trace</h4>
+              <pre><code id="code-snippet-display">
+// xai-grok-shell/src/auth/model.rs
+pub fn allows_data_collection(&self) -> bool {
+    if self.is_data_collection_disabled() {
+        return false; // Bypasses /v1/storage uploads
+    }
+    true
+}
+              </code></pre>
+            </div>
+          </div>
+
+          <!-- Flow Visualization Panel -->
+          <div class="panel glass data-flow-panel">
+            <h2 class="panel-title">Interactive Data Plane Flow</h2>
+            <div class="canvas-container">
+              <!-- Interactive SVG Flow diagram -->
+              <svg id="flow-svg" viewBox="0 0 800 500" width="100%" height="100%">
+                <!-- Defs for arrows and gradients -->
+                <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+                  </marker>
+                  <marker id="arrow-active" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6" />
+                  </marker>
+                  <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#60a5fa" stop-opacity="0.8"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Connection Lines (Static Backgrounds) -->
+                <!-- Files to Sandbox -->
+                <path d="M 120,130 C 180,130 180,200 240,200" stroke="#334155" stroke-width="3" fill="none" />
+                <!-- Prompts to Sandbox -->
+                <path d="M 120,270 C 180,270 180,200 240,200" stroke="#334155" stroke-width="3" fill="none" />
+                
+                <!-- Sandbox to Local Storage -->
+                <path d="M 360,200 C 400,200 420,120 460,120" stroke="#334155" stroke-width="3" fill="none" />
+                <!-- Sandbox to Telemetry Gate -->
+                <path d="M 360,200 C 400,200 420,200 460,200" stroke="#334155" stroke-width="3" fill="none" />
+                <!-- Sandbox to Cloud Storage Gate -->
+                <path d="M 360,200 C 400,200 420,280 460,280" stroke="#334155" stroke-width="3" fill="none" />
+
+                <!-- Telemetry Gate to Mixpanel API -->
+                <path id="path-telemetry" d="M 520,200 L 640,200" stroke="#334155" stroke-width="3" fill="none" marker-end="url(#arrow)" />
+                <!-- Cloud Storage Gate to SpaceXAI Cloud -->
+                <path id="path-cloud" d="M 520,280 L 640,280" stroke="#334155" stroke-width="3" fill="none" marker-end="url(#arrow)" />
+
+                <!-- Animated Particles (Created dynamically in JS) -->
+
+                <!-- Flow Nodes -->
+                <!-- Workspace Files -->
+                <g class="flow-node" transform="translate(40, 100)">
+                  <rect width="100" height="60" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+                  <text x="50" y="35" fill="#f8fafc" text-anchor="middle" font-size="12" font-family="Inter" font-weight="600">Workspace</text>
+                  <text x="50" y="50" fill="#94a3b8" text-anchor="middle" font-size="10" font-family="Inter">Files & Logs</text>
+                </g>
+
+                <!-- Prompt Inputs -->
+                <g class="flow-node" transform="translate(40, 240)">
+                  <rect width="100" height="60" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+                  <text x="50" y="35" fill="#f8fafc" text-anchor="middle" font-size="12" font-family="Inter" font-weight="600">Prompt Input</text>
+                  <text x="50" y="50" fill="#94a3b8" text-anchor="middle" font-size="10" font-family="Inter">User Queries</text>
+                </g>
+
+                <!-- Sanitization Sandbox -->
+                <g class="flow-node" transform="translate(240, 170)">
+                  <rect width="120" height="70" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+                  <text x="60" y="35" fill="#f8fafc" text-anchor="middle" font-size="12" font-family="Inter" font-weight="600">Rust Client Sandbox</text>
+                  <text x="60" y="50" fill="#60a5fa" text-anchor="middle" font-size="10" font-family="Inter">Local Execution</text>
+                </g>
+
+                <!-- Local DB / Cache -->
+                <g class="flow-node" transform="translate(460, 90)">
+                  <rect width="120" height="50" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
+                  <text x="60" y="25" fill="#f8fafc" text-anchor="middle" font-size="11" font-family="Inter" font-weight="600">Local Journal</text>
+                  <text x="60" y="40" fill="#10b981" text-anchor="middle" font-size="9" font-family="Inter">xai-sqlite-journal</text>
+                </g>
+
+                <!-- Telemetry Control Gate -->
+                <g class="flow-node" id="node-telemetry-gate" transform="translate(460, 175)">
+                  <rect width="120" height="50" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+                  <text x="60" y="25" fill="#f8fafc" text-anchor="middle" font-size="11" font-family="Inter" font-weight="600">Telemetry Gate</text>
+                  <text x="60" y="40" id="text-telemetry-status" fill="#60a5fa" text-anchor="middle" font-size="9" font-family="Inter">ALLOW</text>
+                </g>
+
+                <!-- Cloud Upload Gate -->
+                <g class="flow-node" id="node-cloud-gate" transform="translate(460, 255)">
+                  <rect width="120" height="50" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+                  <text x="60" y="25" fill="#f8fafc" text-anchor="middle" font-size="11" font-family="Inter" font-weight="600">Cloud Upload Gate</text>
+                  <text x="60" y="40" id="text-cloud-status" fill="#60a5fa" text-anchor="middle" font-size="9" font-family="Inter">ALLOW</text>
+                </g>
+
+                <!-- Mixpanel Endpoint -->
+                <g class="flow-node" id="node-mixpanel" transform="translate(640, 170)">
+                  <rect width="130" height="60" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+                  <text x="65" y="30" fill="#f1f5f9" text-anchor="middle" font-size="12" font-family="Inter" font-weight="600">Mixpanel Analytics</text>
+                  <text x="65" y="45" fill="#94a3b8" text-anchor="middle" font-size="10" font-family="Inter">Usage & Errors</text>
+                </g>
+
+                <!-- SpaceXAI Cloud Endpoint -->
+                <g class="flow-node" id="node-cloud-api" transform="translate(640, 250)">
+                  <rect width="130" height="60" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+                  <text x="65" y="25" fill="#f1f5f9" text-anchor="middle" font-size="12" font-family="Inter" font-weight="600">SpaceXAI Endpoint</text>
+                  <text x="65" y="40" id="text-cloud-zdr" fill="#60a5fa" text-anchor="middle" font-size="9" font-family="Inter">ZDR active</text>
+                  <text x="65" y="52" fill="#94a3b8" text-anchor="middle" font-size="8" font-family="Inter">/v1/storage</text>
+                </g>
+
+                <!-- Shield indicators (visible when blocked) -->
+                <g id="shield-telemetry" transform="translate(560, 185)" style="display:none;">
+                  <circle cx="15" cy="15" r="16" fill="#f87171" fill-opacity="0.2" stroke="#ef4444" stroke-width="1.5" />
+                  <path d="M15 7l-8 3v5c0 4.8 8 8 8 8s8-3.2 8-8v-5l-8-3z" fill="#ef4444" transform="translate(7, 7) scale(0.55)" />
+                </g>
+
+                <g id="shield-cloud" transform="translate(560, 265)" style="display:none;">
+                  <circle cx="15" cy="15" r="16" fill="#f87171" fill-opacity="0.2" stroke="#ef4444" stroke-width="1.5" />
+                  <path d="M15 7l-8 3v5c0 4.8 8 8 8 8s8-3.2 8-8v-5l-8-3z" fill="#ef4444" transform="translate(7, 7) scale(0.55)" />
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CODEBASE GRAPH TAB ================= -->
+      <section id="graph-tab" class="tab-content">
+        <div class="graph-layout">
+          <!-- Control Column -->
+          <div class="panel glass info-sidebar">
+            <h2 class="panel-title">Codebase Topology</h2>
+            <p class="section-desc">Grok Build evaluates workspace files as nodes in a dependency graph to resolve prompt context. Interact with the active canvas to analyze the layout.</p>
+            
+            <div class="workspace-meta card">
+              <h4>Scan Statistics</h4>
+              <div class="stat-row">
+                <span>Crates Analyzed</span>
+                <strong style="color: var(--accent-assistant);">65</strong>
+              </div>
+              <div class="stat-row">
+                <span>Source Files</span>
+                <strong>2,734</strong>
+              </div>
+              <div class="stat-row">
+                <span>Language Composition</span>
+                <span class="badge lang-badge">Rust (100%)</span>
+              </div>
+            </div>
+
+            <div class="node-inspector card" id="node-inspector-panel">
+              <h4 id="inspect-title">Click a node to inspect</h4>
+              <div class="inspect-detail-row">
+                <span class="detail-label">File Type</span>
+                <span class="detail-val" id="inspect-type">-</span>
+              </div>
+              <div class="inspect-detail-row">
+                <span class="detail-label">Size</span>
+                <span class="detail-val" id="inspect-size">-</span>
+              </div>
+              <div class="inspect-detail-row">
+                <span class="detail-label">Scope Boundary</span>
+                <span class="detail-val" id="inspect-boundary">-</span>
+              </div>
+              <div class="inspect-detail-row">
+                <span class="detail-label">Git Tracked</span>
+                <span class="detail-val" id="inspect-git">-</span>
+              </div>
+            </div>
+            
+            <div class="canvas-legend">
+              <span class="legend-item"><span class="legend-dot dot-cyan"></span>Binary Crate</span>
+              <span class="legend-item"><span class="legend-dot dot-magenta"></span>Codegen Crate</span>
+              <span class="legend-item"><span class="legend-dot dot-yellow"></span>Common Lib</span>
+              <span class="legend-item"><span class="legend-dot dot-red"></span>Exclusions (.gitignore)</span>
+            </div>
+          </div>
+
+          <!-- Active Graph Canvas -->
+          <div class="panel glass canvas-panel">
+            <div class="canvas-controls">
+              <button class="btn btn-sm" id="btn-graph-reset">Reset Forces</button>
+              <span class="canvas-status">Double-click to create new linkages</span>
+            </div>
+            <div class="graph-canvas-wrapper">
+              <canvas id="code-graph-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= AI ECU REMAPPER TAB ================= -->
+      <section id="ecu-tab" class="tab-content">
+        <div class="ecu-layout">
+          <!-- ECU Sidebar Controls -->
+          <div class="panel glass scrollable info-sidebar">
+            <h2 class="panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              AI ECU Calibration
+            </h2>
+            <p class="section-desc">Upload your car's ECU binary dump. The AI engine will scan hex coordinates, map calibration indexes, and optimize parameters.</p>
+            
+            <!-- File Uploader -->
+            <div class="ecu-uploader" id="ecu-upload-zone">
+              <div class="upload-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="upload-title" id="ecu-upload-title">Drag & Drop ECU File</p>
+              <p class="upload-subtitle">Supports .bin, .hex (Max 4MB)</p>
+              <input type="file" id="ecu-file-input" style="display: none;" accept=".bin,.hex">
+            </div>
+
+            <!-- Metadata info (visible after file upload) -->
+            <div class="workspace-meta card ecu-meta" id="ecu-meta-panel" style="display: none;">
+              <h4 style="color: var(--ui-cyan);">ECU Diagnostic Info</h4>
+              <div class="stat-row"><span>ECU Type</span><strong id="ecu-info-type">Bosch EDC17C69</strong></div>
+              <div class="stat-row"><span>Vehicle</span><strong id="ecu-info-car">Alfa Romeo 2.0 JTDM</strong></div>
+              <div class="stat-row"><span>Software ID</span><strong>1037542861</strong></div>
+              <div class="stat-row"><span>Mapped Offset Tables</span><strong style="color: var(--ui-green);">12 Detected</strong></div>
+            </div>
+
+            <!-- Parameters sliders -->
+            <div class="control-group ecu-controls-group" style="opacity: 0.5; pointer-events: none;" id="ecu-sliders-container">
+              <label class="group-label">Map Adjustments</label>
+              
+              <div class="ecu-slider-item">
+                <div class="slider-labels">
+                  <span>Turbo Boost Target</span>
+                  <span id="label-val-boost">+0%</span>
+                </div>
+                <input type="range" class="ecu-slider" id="slider-boost" min="0" max="20" value="0">
+              </div>
+
+              <div class="ecu-slider-item">
+                <div class="slider-labels">
+                  <span>Rail Fuel Injection</span>
+                  <span id="label-val-fuel">+0%</span>
+                </div>
+                <input type="range" class="ecu-slider" id="slider-fuel" min="0" max="15" value="0">
+              </div>
+
+              <div class="ecu-slider-item">
+                <div class="slider-labels">
+                  <span>Torque Limiter ceiling</span>
+                  <span id="label-val-torque">+0%</span>
+                </div>
+                <input type="range" class="ecu-slider" id="slider-torque" min="0" max="25" value="0">
+              </div>
+
+              <button class="btn btn-primary" id="btn-run-remap" style="margin-top: 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Calibrate Stage 1
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Remap visualizer -->
+          <div class="panel glass canvas-panel" style="flex-grow: 1;">
+            <h2 class="panel-title">AI Engine Calibration & Bench Test</h2>
+            
+            <!-- Gauge values -->
+            <div class="ecu-gauges-row">
+              <div class="gauge-card glass">
+                <div class="gauge-val" id="gauge-torque">380 <span class="unit">Nm</span></div>
+                <div class="gauge-label">Peak Torque</div>
+              </div>
+              <div class="gauge-card glass">
+                <div class="gauge-val" id="gauge-bhp">170 <span class="unit">BHP</span></div>
+                <div class="gauge-label">Peak Power</div>
+              </div>
+              <div class="gauge-card glass">
+                <div class="gauge-val" id="gauge-boost">1.40 <span class="unit">bar</span></div>
+                <div class="gauge-label">Turbo Boost</div>
+              </div>
+            </div>
+
+            <!-- Dynamically rendered torque / HP chart -->
+            <div class="graph-canvas-wrapper" style="height: 280px; position: relative;">
+              <canvas id="ecu-chart-canvas"></canvas>
+            </div>
+
+            <!-- Hex Map / Trace preview -->
+            <div class="code-reference-card ecu-hex-card" style="margin-top: 16px;">
+              <h4 style="display:flex; justify-content:space-between;">
+                <span>Live HEX Map Offset Table (0x1C2F8A - Torque Limiter)</span>
+                <span style="color: var(--ui-cyan);" id="hex-status">Ready</span>
+              </h4>
+              <pre><code id="ecu-hex-display">
+001C2F8A | 00 00 01 C2 | 07 D0 09 C4 | 0C 80 0E B8 | 0F A0 11 94 | 13 88 15 7C
+001C2FA0 | 01 A4 02 BC | 03 84 04 E2 | 05 D8 06 A1 | 07 C2 08 E0 | 09 F5 0A A3
+001C2FB6 | FF FC F0 D2 | E2 CA D0 B8 | C4 A2 B6 9A | A8 80 94 72 | 80 6E 70 5E
+              </code></pre>
+            </div>
+
+            <!-- AI Tuning Report -->
+            <div class="card ecu-report-card" id="ecu-report-panel" style="display:none; margin-top: 16px; background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15);">
+              <h4 style="color: var(--ui-green); font-size: 0.9rem; margin-bottom: 6px;">AI ECU Calibration Complete</h4>
+              <p style="font-size: 0.78rem; line-height: 1.45; color: var(--ui-text-sec);" id="ecu-report-text">
+                Stage 1 tuning file generated successfully. Torque limiters shifted from 380Nm to 425Nm (+12%). Injector duration map optimized. Turbo target pressure request elevated safely by +0.15 bar. Lambda maps checked, safety margins kept within Bosch manufacturer limits. Bypassed EGR cycle diagnostic blocks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- TOML Export Modal -->
+  <div class="modal-overlay" id="toml-modal">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3>Your Theme TOML Configuration</h3>
+        <button class="modal-close" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Copy this TOML block directly into your <code>~/.config/grok/config.toml</code> configuration to apply the theme to the Grok Build terminal client.</p>
+        <div class="toml-code-container">
+          <button class="btn-copy-toml" id="btn-copy-toml">Copy Code</button>
+          <pre><code id="toml-code-block">
+[cli]
+theme = "custom"
+
+[theme.custom]
+bg_base = "#1a1b26"
+bg_light = "#292e42"
+bg_dark = "#16161e"
+# ... Rest will load dynamically
+          </code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
