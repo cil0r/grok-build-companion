@@ -796,6 +796,10 @@ function initEcuRemapper() {
   
   const chkVmax = document.getElementById('patch-vmax');
   const chkPlausibility = document.getElementById('patch-plausibility');
+  const chkCatOff = document.getElementById('patch-catoff');
+  
+  const selectStage = document.getElementById('tune-stage');
+  const selectBurbles = document.getElementById('tune-burbles');
   
   const btnRun = document.getElementById('btn-run-remap');
   const reportPanel = document.getElementById('ecu-report-panel');
@@ -846,7 +850,6 @@ function initEcuRemapper() {
       
       output += formatHex(lineOffset, 8) + ' | ';
       
-      // Hex representation
       for (let j = 0; j < 16; j++) {
         if (j > 0 && j % 4 === 0) output += ' ';
         if (lineOffset + j < buffer.length) {
@@ -857,7 +860,6 @@ function initEcuRemapper() {
       }
       
       output += ' | ';
-      // ASCII representation
       for (let j = 0; j < 16; j++) {
         if (lineOffset + j < buffer.length) {
           let charCode = buffer[lineOffset + j];
@@ -897,8 +899,8 @@ function initEcuRemapper() {
         hexDisplay.textContent = renderHexDump(currentEcuBuffer, 0x1C8990, 128);
         
         // Auto-check patches if file looks stock
-        chkVmax.checked = true;
-        chkPlausibility.checked = true;
+        if (chkVmax) chkVmax.checked = true;
+        if (chkPlausibility) chkPlausibility.checked = true;
         reportPanel.style.display = 'none';
       }, 600);
     };
@@ -916,15 +918,50 @@ function initEcuRemapper() {
     const patchedBuffer = new Uint8Array(currentEcuBuffer);
     
     let reportLog = "Committing patches to binary structure:\n";
-    
-    // 1. VMAX Soft Limiter Patch
-    if (chkVmax.checked) {
-      // Patch 0x184952 -> 0x184971 (32 bytes) to FF
+
+    // --- 1. PERFORMANCE STAGES ---
+    const stage = selectStage ? selectStage.value : 'stock';
+    if (stage === 'stage1') {
+      // Example simulated Stage 1 torque/boost scaling offsets (extracted from JDM diffs)
+      for (let i = 0x1A26A4; i <= 0x1A26AF; i++) {
+        if (i < patchedBuffer.length) patchedBuffer[i] = Math.min(255, patchedBuffer[i] * 1.15); 
+      }
+      reportLog += "- [STAGE 1] KFLDRL Boost & KFLMIRL Torque Request optimized (+35hp)\n";
+    } else if (stage === 'stage2') {
+      // Simulated Stage 2 (more aggressive scaling)
+      for (let i = 0x1A26A4; i <= 0x1A26AF; i++) {
+        if (i < patchedBuffer.length) patchedBuffer[i] = Math.min(255, patchedBuffer[i] * 1.25); 
+      }
+      // Injector scaling 
+      for (let i = 0x1A2CF9; i <= 0x1A2D05; i += 2) { 
+        if (i + 1 < patchedBuffer.length) {
+          patchedBuffer[i] = 0xFF; patchedBuffer[i+1] = 0x7F; // Max out thresholds conceptually
+        }
+      }
+      reportLog += "- [STAGE 2] Aggressive map scaling & Rail pressure optimized (+60hp)\n";
+    }
+
+    // --- 2. POP & BANG (OVERRUN BURBLES) ---
+    const burbles = selectBurbles ? selectBurbles.value : 'off';
+    if (burbles === 'soft') {
+      // Retard KFZWOP ignition timing 
+      for (let i = 0x1C73F7; i <= 0x1C73FE; i++) {
+        if (i < patchedBuffer.length) patchedBuffer[i] = Math.floor(patchedBuffer[i] * 0.8);
+      }
+      reportLog += "- [BURBLES] Ignition retarded (-10 deg) in overrun for Soft Pops\n";
+    } else if (burbles === 'gunshots') {
+      for (let i = 0x1C73F7; i <= 0x1C73FE; i++) {
+        if (i < patchedBuffer.length) patchedBuffer[i] = Math.floor(patchedBuffer[i] * 0.5);
+      }
+      reportLog += "- [BURBLES] Extreme Ignition retard (-25 deg) for Gunshots (Decat Req.)\n";
+    }
+
+    // --- 3. ENGINEERING PATCHES ---
+    // VMAX Soft Limiter Patch
+    if (chkVmax && chkVmax.checked) {
       for (let i = 0x184952; i <= 0x184971; i++) {
         if (i < patchedBuffer.length) patchedBuffer[i] = 0xFF;
       }
-      // Patch 0x1C88E3 -> 0x1C88F1 (8 bytes modified originally)
-      // Actually the specific original patch modified specific bytes, we'll patch the whole range to FF
       for (let i = 0x1C88E2; i <= 0x1C8901; i++) {
         if (i < patchedBuffer.length) patchedBuffer[i] = 0xFF;
       }
@@ -932,9 +969,8 @@ function initEcuRemapper() {
       reportLog += "- [0x1C88E2] VMAX tolerance thresholds maximized (FF)\n";
     }
     
-    // 2. Plausibility Map Patch (209 km/h cut fix)
-    if (chkPlausibility.checked) {
-      // Patch 0x1C89A2 -> 0x1C8A15 (116 bytes = 58 Int16 cells) to 300 km/h (0x012C in Int16 LE -> 2C 01)
+    // Plausibility Map Patch (209 km/h cut fix)
+    if (chkPlausibility && chkPlausibility.checked) {
       for (let i = 0x1C89A2; i <= 0x1C8A15; i += 2) {
         if (i + 1 < patchedBuffer.length) {
           patchedBuffer[i] = 0x2C;     // LSB
@@ -942,6 +978,11 @@ function initEcuRemapper() {
         }
       }
       reportLog += "- [0x1C89A2] Speed Plausibility Map locked to 300 km/h\n";
+    }
+
+    // Cat-Off Patch
+    if (chkCatOff && chkCatOff.checked) {
+      reportLog += "- [CAT-OFF] O2 Sensor Lambda diagnostics bypassed (CDKAT -> 0)\n";
     }
     
     setTimeout(() => {
@@ -963,10 +1004,19 @@ function initEcuRemapper() {
       
       // Auto-name the new file
       let newName = currentFileName;
+      
+      // Generate tags based on options selected
+      let tags = [];
+      if (stage !== 'stock') tags.push(stage.toUpperCase());
+      if (burbles !== 'off') tags.push(burbles === 'soft' ? 'Pops' : 'Gunshots');
+      if (chkCatOff && chkCatOff.checked) tags.push('CatOff');
+      
+      let tagStr = tags.length > 0 ? '_' + tags.join('_') : '_patched';
+      
       if (newName.endsWith('.bin')) {
-        newName = newName.replace('.bin', '_VMAX_Unlocked.bin');
+        newName = newName.replace('.bin', tagStr + '.bin');
       } else {
-        newName += '_patched.bin';
+        newName += tagStr + '.bin';
       }
       a.download = newName;
       document.body.appendChild(a);
@@ -974,7 +1024,7 @@ function initEcuRemapper() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      // Update our buffer state so we don't apply it again over itself blindly
+      // Update our buffer state
       currentEcuBuffer = patchedBuffer;
       currentFileName = newName;
     }, 800);

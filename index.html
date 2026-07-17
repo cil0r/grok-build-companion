@@ -50,7 +50,7 @@
         </button>
         <button class="nav-btn" data-tab="ecu-tab">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-          AI ECU Remapper
+          N13 Tuning Studio
         </button>
       </div>
       
@@ -609,66 +609,80 @@ pub fn allows_data_collection(&self) -> bool {
         </div>
       </section>
 
-      <!-- ================= AI ECU REMAPPER TAB ================= -->
+      <!-- ================= N13 TUNING STUDIO TAB ================= -->
       <section id="ecu-tab" class="tab-content">
         <div class="ecu-layout" style="display: grid; grid-template-columns: 350px 1fr; gap: 24px;">
           <!-- ECU Sidebar Controls -->
           <div class="panel glass scrollable info-sidebar">
-            <h2 class="panel-title">
+            <h2 class="panel-title" style="margin-bottom: 5px;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-              AI Hex Patcher
+              Grok N13 Tuning Studio
             </h2>
-            <p class="section-desc">Professional binary manipulation for Bosch MEVD17.2.5. Drop your ECU `.bin` dump to scan specific calibration offsets.</p>
+            <p class="section-desc">Complete Remapping Suite for BMW F20 N13 (Bosch MEVD17.2.5). Select your desired performance stages and features.</p>
             
             <!-- File Uploader -->
-            <div class="ecu-uploader" id="ecu-upload-zone" style="margin-bottom: 20px;">
+            <div class="ecu-uploader" id="ecu-upload-zone" style="margin-bottom: 16px; padding: 16px;">
               <div class="upload-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <p class="upload-title" id="ecu-upload-title">Drag & Drop .bin File</p>
-              <p class="upload-subtitle">Bosch MEVD17 (BMW F20)</p>
+              <p class="upload-title" id="ecu-upload-title" style="font-size: 0.9rem;">Drag & Drop Original .bin</p>
               <input type="file" id="ecu-file-input" style="display: none;" accept=".bin,.hex">
             </div>
 
-            <!-- Metadata info (visible after file upload) -->
-            <div class="workspace-meta card ecu-meta" id="ecu-meta-panel" style="display: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-              <h4 style="color: var(--ui-cyan); margin-bottom: 12px; font-size: 0.9rem;">File Fingerprint</h4>
+            <!-- Metadata info -->
+            <div class="workspace-meta card ecu-meta" id="ecu-meta-panel" style="display: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
               <div class="stat-row"><span>File Size</span><strong id="ecu-info-size">---</strong></div>
-              <div class="stat-row"><span>ECU Type</span><strong id="ecu-info-type">Bosch MEVD17.2.5</strong></div>
               <div class="stat-row"><span>Status</span><strong id="ecu-info-status" style="color: var(--ui-yellow);">Scanning...</strong></div>
             </div>
 
-            <!-- Engineering Patches -->
-            <div class="control-group ecu-controls-group" style="opacity: 0.5; pointer-events: none; margin-top: 24px;" id="ecu-sliders-container">
-              <label class="group-label">Engineering Patches</label>
+            <div class="control-group ecu-controls-group" style="opacity: 0.5; pointer-events: none;" id="ecu-sliders-container">
               
-              <label class="toggle-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer;">
+              <!-- 1. Performance Stage -->
+              <label class="group-label" style="color: var(--ui-cyan);">1. Engine Performance</label>
+              <div class="input-row" style="margin-bottom: 16px;">
+                <select id="tune-stage" class="llm-select" style="width: 100%;">
+                  <option value="stock">OEM Stock (No Power Mod)</option>
+                  <option value="stage1">Stage 1 (95 Octane, ~170hp)</option>
+                  <option value="stage2">Stage 2 (98/100 Oct, Downpipe, ~210hp)</option>
+                </select>
+              </div>
+
+              <!-- 2. Pop & Bang -->
+              <label class="group-label" style="color: var(--ui-pink);">2. Overrun Burbles (Pop & Bang)</label>
+              <div class="input-row" style="margin-bottom: 16px;">
+                <select id="tune-burbles" class="llm-select" style="width: 100%;">
+                  <option value="off">Off (Factory)</option>
+                  <option value="soft">Soft Burbles (Sport Mode only)</option>
+                  <option value="gunshots">Aggressive / Gunshots (Decat Required)</option>
+                </select>
+              </div>
+
+              <!-- 3. Engineering Patches -->
+              <label class="group-label" style="color: var(--ui-green);">3. Engineering Patches</label>
+              <label class="toggle-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; cursor: pointer;">
                 <div style="display:flex; flex-direction: column;">
-                  <span style="font-weight: 500; font-size: 0.85rem;">VMAX Soft Limiter</span>
-                  <span style="font-size: 0.7rem; color: var(--ui-text-sec);">Patch 0x184952 (32 bytes)</span>
+                  <span style="font-weight: 500; font-size: 0.8rem;">VMAX Unlock (Speed Limiter)</span>
                 </div>
-                <input type="checkbox" id="patch-vmax" style="accent-color: var(--ui-cyan); width: 16px; height: 16px;">
+                <input type="checkbox" id="patch-vmax" style="accent-color: var(--ui-cyan); width: 14px; height: 14px;">
               </label>
 
-              <label class="toggle-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer;">
+              <label class="toggle-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; cursor: pointer;">
                 <div style="display:flex; flex-direction: column;">
-                  <span style="font-weight: 500; font-size: 0.85rem;">Plausibility Map (209 km/h)</span>
-                  <span style="font-size: 0.7rem; color: var(--ui-text-sec);">Patch 0x1C89A2 (116 bytes)</span>
+                  <span style="font-weight: 500; font-size: 0.8rem;">Plausibility Map Fix (209 km/h)</span>
                 </div>
-                <input type="checkbox" id="patch-plausibility" style="accent-color: var(--ui-cyan); width: 16px; height: 16px;">
+                <input type="checkbox" id="patch-plausibility" style="accent-color: var(--ui-cyan); width: 14px; height: 14px;">
               </label>
 
               <label class="toggle-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; cursor: pointer;">
                 <div style="display:flex; flex-direction: column;">
-                  <span style="font-weight: 500; font-size: 0.85rem;">Torque Monitoring Lvl 2</span>
-                  <span style="font-size: 0.7rem; color: var(--ui-text-sec);">Prevent 1E5A20 Error</span>
+                  <span style="font-weight: 500; font-size: 0.8rem;">Cat-Off (O2 Sensor Delete)</span>
                 </div>
-                <input type="checkbox" id="patch-torque" disabled title="Requires pattern scan" style="accent-color: var(--ui-cyan); width: 16px; height: 16px;">
+                <input type="checkbox" id="patch-catoff" style="accent-color: var(--ui-cyan); width: 14px; height: 14px;">
               </label>
 
-              <button class="btn btn-primary" id="btn-run-remap" style="width: 100%; justify-content: center;">
+              <button class="btn btn-primary" id="btn-run-remap" style="width: 100%; justify-content: center; margin-top: 8px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Apply Patches & Save .BIN
+                Build Tuning File (.BIN)
               </button>
             </div>
           </div>
