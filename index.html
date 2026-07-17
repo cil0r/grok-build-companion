@@ -52,6 +52,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
           N13 Tuning Studio
         </button>
+        <button class="nav-btn" data-tab="damos-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          Damos Analyzer
+        </button>
       </div>
       
       <div class="header-actions">
@@ -712,6 +716,49 @@ pub fn allows_data_collection(&self) -> bool {
               <p style="font-size: 0.78rem; line-height: 1.45; color: var(--ui-text-sec);" id="ecu-report-text">
                 File patched and checksum marked for recalculation. Flash the resulting .bin file using your Bench tool (Autotuner, Flex, Kess3).
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DAMOS ANALYZER TAB ================= -->
+      <section id="damos-tab" class="tab-content">
+        <div class="ecu-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 24px;">
+          <!-- Sidebar: A2L Uploader and Map List -->
+          <div class="panel glass scrollable info-sidebar">
+            <h2 class="panel-title" style="margin-bottom: 5px;">Damos (A2L) Parser</h2>
+            <p class="section-desc">Upload an ASAP2 (.a2l) definition file to dynamically extract engine maps.</p>
+            
+            <div class="ecu-uploader" id="damos-upload-zone" style="margin-bottom: 16px; padding: 16px;">
+              <div class="upload-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <p class="upload-title" id="damos-upload-title" style="font-size: 0.9rem;">Drop Damos .a2l File</p>
+              <input type="file" id="damos-file-input" style="display: none;" accept=".a2l,.txt">
+            </div>
+
+            <div class="workspace-meta card ecu-meta" id="damos-meta-panel" style="display: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+              <div class="stat-row"><span>Parsed Maps</span><strong id="damos-map-count" style="color: var(--ui-cyan);">0</strong></div>
+              <div class="stat-row"><span>Status</span><strong id="damos-status" style="color: var(--ui-green);">Ready</strong></div>
+            </div>
+
+            <div class="map-explorer" id="damos-map-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 400px; overflow-y: auto;">
+              <!-- Map items will be injected here -->
+            </div>
+          </div>
+
+          <!-- Main Panel: Map Viewer -->
+          <div class="panel glass canvas-panel" style="flex-grow: 1; display: flex; flex-direction: column;">
+            <h2 class="panel-title" id="damos-viewer-title">Map Viewer</h2>
+            
+            <div class="code-reference-card ecu-hex-card" style="margin-top: 0; flex-grow: 1; display: flex; flex-direction: column; background: #0a0a0f;">
+              <h4 style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
+                <span id="damos-map-name">Select a map from the sidebar</span>
+                <span style="color: var(--ui-cyan);" id="damos-map-address">---</span>
+              </h4>
+              <div id="damos-grid-container" style="overflow: auto; flex-grow: 1; display: flex; align-items: center; justify-content: center; color: var(--ui-text-sec);">
+                No Damos Data Loaded
+              </div>
             </div>
           </div>
         </div>

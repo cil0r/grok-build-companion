@@ -1071,4 +1071,130 @@ function initEcuRemapper() {
   });
 }
 
+// ==========================================
+// 7. DAMOS (A2L) ANALYZER
+// ==========================================
 
+function initDamosAnalyzer() {
+  const uploadZone = document.getElementById('damos-upload-zone');
+  const fileInput = document.getElementById('damos-file-input');
+  const uploadTitle = document.getElementById('damos-upload-title');
+  const metaPanel = document.getElementById('damos-meta-panel');
+  const mapList = document.getElementById('damos-map-list');
+  const mapCount = document.getElementById('damos-map-count');
+  
+  const mapNameDisplay = document.getElementById('damos-map-name');
+  const mapAddressDisplay = document.getElementById('damos-map-address');
+  const gridContainer = document.getElementById('damos-grid-container');
+
+  if (!uploadZone) return; // Prevent errors if UI is missing
+
+  let parsedMaps = [];
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) loadA2LFile(e.target.files[0]);
+  });
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.style.borderColor = 'var(--ui-cyan)';
+  });
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+  });
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length > 0) loadA2LFile(e.dataTransfer.files[0]);
+  });
+
+  function loadA2LFile(file) {
+    uploadTitle.textContent = file.name;
+    uploadZone.style.borderColor = 'var(--ui-green)';
+    metaPanel.style.display = 'block';
+    mapCount.textContent = "Parsing...";
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const text = e.target.result;
+      parseA2L(text);
+    };
+    reader.readAsText(file);
+  }
+
+  function parseA2L(text) {
+    parsedMaps = [];
+    
+    // Quick regex parser for A2L CHARACTERISTIC blocks
+    const blockRegex = /\/begin\s+CHARACTERISTIC\s+([\w_]+)\s+"([^"]*)"\s+(VALUE|CURVE|MAP|CUBOID|VAL_BLK)\s+(0x[0-9a-fA-F]+|[0-9]+)/g;
+    
+    let match;
+    while ((match = blockRegex.exec(text)) !== null) {
+      parsedMaps.push({
+        name: match[1],
+        description: match[2],
+        type: match[3],
+        address: match[4]
+      });
+    }
+
+    // Sort alphabetically
+    parsedMaps.sort((a, b) => a.name.localeCompare(b.name));
+    
+    mapCount.textContent = parsedMaps.length;
+    renderMapList();
+  }
+
+  function renderMapList() {
+    mapList.innerHTML = '';
+    
+    // Render first 500 max to avoid freezing browser
+    const displayMaps = parsedMaps.slice(0, 500);
+    
+    displayMaps.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'toggle-row';
+      div.style.padding = '8px';
+      div.style.cursor = 'pointer';
+      div.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+      div.innerHTML = `
+        <div style="display:flex; flex-direction: column;">
+          <strong style="color: var(--ui-cyan); font-size: 0.85rem;">${m.name}</strong>
+          <span style="font-size: 0.7rem; color: var(--ui-text-sec);">${m.description.substring(0, 40)}...</span>
+        </div>
+        <span style="font-size: 0.7rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">${m.address}</span>
+      `;
+      
+      div.addEventListener('click', () => {
+        // Deselect others
+        Array.from(mapList.children).forEach(c => c.style.background = 'transparent');
+        div.style.background = 'rgba(255,255,255,0.05)';
+        
+        mapNameDisplay.textContent = m.name + " (" + m.type + ")";
+        mapAddressDisplay.textContent = m.address;
+        gridContainer.innerHTML = `<p style="text-align:center;">
+          Definition loaded.<br>
+          <span style="font-size:0.8rem;">(Load a .bin file in the N13 Studio tab first to visualize the 3D values of this map)</span>
+        </p>`;
+      });
+      
+      mapList.appendChild(div);
+    });
+    
+    if (parsedMaps.length > 500) {
+      const limitDiv = document.createElement('div');
+      limitDiv.style.padding = '8px';
+      limitDiv.style.textAlign = 'center';
+      limitDiv.style.fontSize = '0.75rem';
+      limitDiv.style.color = 'var(--ui-yellow)';
+      limitDiv.textContent = `...and ${parsedMaps.length - 500} more maps.`;
+      mapList.appendChild(limitDiv);
+    }
+  }
+}
+
+// Hook it up
+const _oldOnload = window.onload;
+window.onload = function() {
+  if (_oldOnload) _oldOnload();
+  initDamosAnalyzer();
+};
