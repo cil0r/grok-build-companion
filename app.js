@@ -1016,11 +1016,24 @@ function initEcuRemapper() {
     } else {
       newName += tagStr + '.bin';
     }
+    
+    // Sanitize filename (remove any illegal characters)
+    newName = newName.replace(/[^a-z0-9_\-\.\(\)]/gi, '_');
+    
+    reportLog += "\nOperation completed. Generating downloadable binary...\n";
+    reportLog += "Filename intended: " + newName;
+    reportText.textContent = reportLog;
+    reportPanel.style.display = 'block';
+
     a.download = newName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    
+    // Delay revocation to ensure Chrome registers the download name
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
     
     // Update our buffer state
     currentEcuBuffer = patchedBuffer;
