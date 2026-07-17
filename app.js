@@ -985,49 +985,46 @@ function initEcuRemapper() {
       reportLog += "- [CAT-OFF] O2 Sensor Lambda diagnostics bypassed (CDKAT -> 0)\n";
     }
     
-    setTimeout(() => {
-      hexStatus.textContent = "Viewing 0x1C8990 (Patched)";
-      hexStatus.style.color = "var(--ui-cyan)";
-      
-      // Show updated hex dump
-      hexDisplay.textContent = renderHexDump(patchedBuffer, 0x1C8990, 128);
-      
-      reportLog += "\nOperation completed. Generating downloadable binary...";
-      reportText.textContent = reportLog;
-      reportPanel.style.display = 'block';
-      
-      // Trigger download
-      const blob = new Blob([patchedBuffer], { type: "application/octet-stream" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      
-      // Auto-name the new file
-      let newName = currentFileName;
-      
-      // Generate tags based on options selected
-      let tags = [];
-      if (stage !== 'stock') tags.push(stage.toUpperCase());
-      if (burbles !== 'off') tags.push(burbles === 'soft' ? 'Pops' : 'Gunshots');
-      if (chkCatOff && chkCatOff.checked) tags.push('CatOff');
-      
-      let tagStr = tags.length > 0 ? '_' + tags.join('_') : '_patched';
-      
-      if (newName.endsWith('.bin')) {
-        newName = newName.replace('.bin', tagStr + '.bin');
-      } else {
-        newName += tagStr + '.bin';
-      }
-      a.download = newName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // Update our buffer state
-      currentEcuBuffer = patchedBuffer;
-      currentFileName = newName;
-    }, 800);
+    // UI Updates
+    hexStatus.textContent = "Viewing 0x1C8990 (Patched)";
+    hexStatus.style.color = "var(--ui-cyan)";
+    hexDisplay.textContent = renderHexDump(patchedBuffer, 0x1C8990, 128);
+    
+    reportLog += "\nOperation completed. Generating downloadable binary...";
+    reportText.textContent = reportLog;
+    reportPanel.style.display = 'block';
+    
+    // Trigger download (Must be synchronous for Chrome to respect filename)
+    const blob = new Blob([patchedBuffer], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Auto-name the new file
+    let newName = currentFileName;
+    
+    // Generate tags based on options selected
+    let tags = [];
+    if (stage !== 'stock') tags.push(stage.toUpperCase());
+    if (burbles !== 'off') tags.push(burbles === 'soft' ? 'Pops' : 'Gunshots');
+    if (chkCatOff && chkCatOff.checked) tags.push('CatOff');
+    
+    let tagStr = tags.length > 0 ? '_' + tags.join('_') : '_patched';
+    
+    if (newName.endsWith('.bin')) {
+      newName = newName.replace('.bin', tagStr + '.bin');
+    } else {
+      newName += tagStr + '.bin';
+    }
+    a.download = newName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    // Update our buffer state
+    currentEcuBuffer = patchedBuffer;
+    currentFileName = newName;
   });
 }
 
