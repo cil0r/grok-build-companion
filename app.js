@@ -1025,27 +1025,49 @@ function initEcuRemapper() {
     reportText.textContent = reportLog;
     reportPanel.style.display = 'block';
 
-    a.download = newName;
-    document.body.appendChild(a);
+    const saveFile = async () => {
+      // Try using the modern File System Access API first (Chrome/Edge)
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: newName,
+            types: [{
+              description: 'Binary File',
+              accept: {'application/octet-stream': ['.bin']},
+            }],
+          });
+          const writable = await handle.createWritable();
+          await writable.write(patchedBuffer);
+          await writable.close();
+          // Update our buffer state
+          currentEcuBuffer = patchedBuffer;
+          currentFileName = newName;
+          return;
+        } catch (err) {
+          // If user cancelled, don't fallback to blob, just exit
+          if (err.name === 'AbortError') return;
+          console.error("SaveFilePicker failed:", err);
+        }
+      }
+
+      // Fallback for older browsers
+      const blob = new Blob([patchedBuffer], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = newName;
+      document.body.appendChild(a);
+      const clickEvent = new MouseEvent('click', { view: window, bubbles: true, cancelable: true });
+      a.dispatchEvent(clickEvent);
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      
+      // Update our buffer state
+      currentEcuBuffer = patchedBuffer;
+      currentFileName = newName;
+    };
     
-    // Dispatch a proper MouseEvent, which bypasses some Chrome security quirks around .click()
-    const clickEvent = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true
-    });
-    a.dispatchEvent(clickEvent);
-    
-    document.body.removeChild(a);
-    
-    // Delay revocation to ensure Chrome registers the download name
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 1000);
-    
-    // Update our buffer state
-    currentEcuBuffer = patchedBuffer;
-    currentFileName = newName;
+    saveFile();
   });
 }
 
