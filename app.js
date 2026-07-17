@@ -1027,7 +1027,15 @@ function initEcuRemapper() {
 
     a.download = newName;
     document.body.appendChild(a);
-    a.click();
+    
+    // Dispatch a proper MouseEvent, which bypasses some Chrome security quirks around .click()
+    const clickEvent = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    a.dispatchEvent(clickEvent);
+    
     document.body.removeChild(a);
     
     // Delay revocation to ensure Chrome registers the download name
